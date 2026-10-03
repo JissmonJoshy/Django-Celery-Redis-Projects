@@ -1,0 +1,225 @@
+{% extends "common.html" %}
+{% load static %}
+{% block content %}
+
+<!-- Header -->
+
+<header class="header">
+    <div class="video-fullscreen-wrap">
+
+
+    <div class="video-fullscreen-video" data-overlay-dark="2">
+        <video playsinline autoplay loop muted>
+            <source src="{% static 'ff.mp4' %}" type="video/mp4">
+        </video>
+    </div>
+
+    <div class="v-middle">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+
+                    <h6>* AI-Powered Product Taxonomy Classification Platform</h6>
+
+                    <h1>Product Taxonomy Intelligence System</h1>
+
+                    <h5>
+                        Automatically Classify
+                        <span>Products Using Artificial Intelligence <i>& Shopify Taxonomy</i></span>
+                    </h5>
+
+                    <a href="{% url 'login' %}" class="button-1 mt-15 mb-15 mr-15">
+                        View Classification Reports
+                        <span class="ti-arrow-top-right"></span>
+                    </a>
+
+                    <a href="{% url 'login' %}"  class="button-2 mt-15 mb-15">
+                        Import Products
+                        <span class="ti-arrow-top-right"></span>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
+</header>
+
+<!-- Process -->
+
+<section class="process-number mt--120 mb-60">
+    <div class="container">
+        <div class="row">
+
+
+        <div class="col-lg-4 col-md-12 mb-30">
+            <div class="item">
+                <div class="con">
+
+                    <div class="no">1</div>
+
+                    <h5>Import Product Catalogue</h5>
+
+                    <p>
+                        Upload your product catalogue containing product names,
+                        descriptions, brands, product types, attributes, and
+                        product images. The system validates and imports the
+                        product information automatically.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-4 col-md-12 mb-30">
+            <div class="item">
+                <div class="con">
+
+                    <div class="no">2</div>
+
+                    <h5>AI Product Classification</h5>
+
+                    <p>
+                        The classification engine analyzes product titles,
+                        descriptions, product types, brands, attributes,
+                        and available images to identify the most appropriate
+                        Shopify Product Taxonomy category.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-lg-4 col-md-12 mb-30">
+            <div class="item">
+                <div class="con">
+
+                    <div class="no">3</div>
+
+                    <h5>Review & Approve Results</h5>
+
+                    <p>
+                        View predicted categories, attributes, attribute values,
+                        confidence scores, and alternative suggestions. Low
+                        confidence products are automatically sent for manual
+                        review and approval.
+                    </p>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+</section>
+
+<!-- About -->
+
+<section class="about section-padding">
+    <div class="container">
+        <div class="row">
+
+
+        <div class="col-lg-12 col-md-12">
+
+            <div class="content">
+
+                <div class="section-subtitle">
+                    Intelligent Product Classification
+                </div>
+
+                <div class="section-title">
+                    AI-Based <span>Shopify Product Taxonomy Classification</span>
+                </div>
+
+                <p class="mb-30">
+                    The Product Taxonomy Intelligence System is a Python and
+                    Django-based platform designed to automatically classify
+                    large product catalogues according to the Shopify Product
+                    Taxonomy. The system analyzes available product information
+                    including product title, description, product type, brand,
+                    attributes, and product images to determine the most
+                    appropriate taxonomy category.
+                </p>
+
+                <p class="mb-30">
+                    The platform is designed to process thousands of products
+                    efficiently while handling incomplete product information,
+                    missing descriptions, unavailable images, and classification
+                    failures. Each classification receives a confidence score,
+                    and products with uncertain results are automatically
+                    identified for manual review.
+                </p>
+
+
+                <ul class="list-unstyled list mb-30">
+
+                    <li>
+                        <div class="list-icon">
+                            <span class="ti-check"></span>
+                        </div>
+
+                        <div class="list-text">
+                            <p>AI-Powered Shopify Product Category Classification</p>
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="list-icon">
+                            <span class="ti-check"></span>
+                        </div>
+
+                        <div class="list-text">
+                            <p>Automatic Category Attribute and Value Detection</p>
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="list-icon">
+                            <span class="ti-check"></span>
+                        </div>
+
+                        <div class="list-text">
+                            <p>Confidence Score and Alternative Category Suggestions</p>
+                        </div>
+                    </li>
+
+
+                    <li>
+                        <div class="list-icon">
+                            <span class="ti-check"></span>
+                        </div>
+
+                        <div class="list-text">
+                            <p>Batch Processing with Manual Review and Approval</p>
+                        </div>
+                    </li>
+
+                </ul>
+
+
+                <a href="#" class="button-1">
+                    Explore Classification
+                    <span class="ti-arrow-top-right"></span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+
+</section>
+
+{% endblock %}

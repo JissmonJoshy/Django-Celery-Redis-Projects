@@ -1,0 +1,43 @@
+{% extends "reviewer/common.html" %}
+{% block content %}
+<section class="section-padding">
+  <div class="container">
+    <h2 class="mb-4" style="color: white;">Classification Results</h2>
+
+    <div class="mb-3">
+      <a href="{% url 'product_list' %}" class="btn btn-sm btn-outline-secondary">All</a>
+      <a href="{% url 'product_list' %}?status=needs_review" class="btn btn-sm btn-outline-warning">Needs Review</a>
+      <a href="{% url 'product_list' %}?status=approved" class="btn btn-sm btn-outline-success">Approved</a>
+      <a href="{% url 'product_list' %}?status=failed" class="btn btn-sm btn-outline-danger">Failed</a>
+    </div>
+
+    <table class="table table-striped">
+      <thead>
+        <tr><th style="color: white;">Product</th><th style="color: white;">Predicted Category</th><th style="color: white;">Confidence</th><th style="color: white;">Status</th><th style="color: white;">Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for result in page_obj %}
+        <tr>
+          <td style="color: white;">{{ result.product.product_name|default:result.product.product_number }}</td>
+          <td style="color: white;">{{ result.predicted_category.full_path|default:"—" }}</td>
+          <td style="color: white;">
+            {{ result.confidence|floatformat:2 }}
+            {% if result.is_low_confidence %}<span class="badge bg-warning text-dark">low</span>{% endif %}
+          </td>
+          <td><span class="badge bg-secondary">{{ result.status }}</span></td>
+          <td><a href="{% url 'product_detail' result.id %}" class="btn btn-sm btn-primary">Review</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <nav>
+      <ul class="pagination">
+        {% if page_obj.has_previous %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&status={{ status_filter }}">Prev</a></li>{% endif %}
+        <li class="page-item"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}<li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&status={{ status_filter }}">Next</a></li>{% endif %}
+      </ul>
+    </nav>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "common.html" %}
+{% load static %}
+{% block content %}
+
+<!-- <section class="banner-header middle-height section-padding bg-img"
+    data-overlay-dark="6"
+    data-background="{% static 'img/slider/30.avif' %}">
+
+    <div class="v-middle">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 text-center">
+                    <h6>AI Powered Traffic Monitoring System</h6>
+                    <h1>Login <span>Here</span></h1>
+                </div>
+            </div>
+        </div>
+    </div>
+</section> -->
+<br><br><br><br>
+<section class="contact section-padding">
+    <div class="container">
+        <div class="row justify-content-center">
+
+            <div class="col-lg-5">
+
+                <div class="form-box">
+
+                    <h5 class="mb-4 text-center">Login</h5>
+
+                    {% if messages %}
+                        {% for i in messages %}
+                            <div class="alert alert-danger">
+                                {{ i }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+
+                    <form method="post">
+
+                        {% csrf_token %}
+
+                        <div class="row">
+
+                            <div class="col-md-12 form-group">
+                                <input type="text"
+                                       name="username"
+                                       placeholder="Username"
+                                       required>
+                            </div>
+
+                            <div class="col-md-12 form-group">
+                                <input type="password"
+                                       name="password"
+                                       placeholder="Password"
+                                       required>
+                            </div>
+
+                            <div class="col-md-12">
+                                <input type="submit" value="Login">
+                            </div>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
