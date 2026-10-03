@@ -1,0 +1,869 @@
+# 🛍️ Shopify Product Taxonomy Classification System
+
+> AI-assisted product classification platform built with Django, Scikit-learn, Celery, Redis, and MariaDB — designed to classify large product catalogues into 
+Shopify Product Taxonomy with confidence scoring, attribute extraction, image validation, and human review workflows.
+
+[![Python](https://img.shields.io/badge/Python-3.10-3776AB?logo=python\&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-5.2.17-092E20?logo=django\&logoColor=white)](https://www.djangoproject.com/)
+[![DRF](https://img.shields.io/badge/Django%20REST%20Framework-API-A30000?logo=django\&logoColor=white)](https://www.django-rest-framework.org/)
+[![Celery](https://img.shields.io/badge/Celery-5.6.3-37814A?logo=celery\&logoColor=white)](https://docs.celeryq.dev/)
+[![Redis](https://img.shields.io/badge/Redis-8.1.0-DC382D?logo=redis\&logoColor=white)](https://redis.io/)
+[![MariaDB](https://img.shields.io/badge/MariaDB-Database-003545?logo=mariadb\&logoColor=white)](https://mariadb.org/)
+[![Scikit--learn](https://img.shields.io/badge/scikit--learn-1.7.2-F7931E?logo=scikit-learn\&logoColor=white)](https://scikit-learn.org/)
+[![Docker](https://img.shields.io/badge/Docker-Redis-2496ED?logo=docker\&logoColor=white)](https://www.docker.com/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
+
+
+ 📌 Overview
+
+The Shopify Product Taxonomy Classification System is a Django-based platform that automatically analyzes product catalogues and assigns products to the most 
+appropriate Shopify Product Taxonomy category.
+
+The system accepts product data from Excel/CSV catalogues, processes product titles, descriptions, materials, and other available attributes, and uses a TF-IDF + cosine 
+similarity classification engine to identify suitable taxonomy categories.
+
+Each prediction includes:
+
+* 🎯 Predicted taxonomy category
+* 📊 Confidence score
+* 🔀 Alternative category suggestions
+* 🏷️ Extracted product attributes
+* 🖼️ Image URL validation status
+* 👤 Manual review status
+
+For large catalogues, classification is processed asynchronously using Celery + Redis, allowing the web application to remain responsive while thousands of products are processed in the background.
+
+
+
+ 🎯 Problem Statement
+
+Large e-commerce catalogues often contain thousands of products with inconsistent or incomplete category information.
+
+Manually categorizing every product can be:
+
+* Time-consuming
+* Difficult to maintain consistently
+* Expensive at scale
+* Prone to human error
+
+This system provides an automated first-pass classification pipeline while keeping human reviewers in the loop for uncertain predictions.
+
+# Example
+
+Input
+
+text
+Product Name:
+Men's Waterproof Running Shoes
+
+Description:
+Lightweight men's running shoes with waterproof mesh,
+rubber outsole and cushioned sole.
+
+
+Classification
+
+text
+Predicted Category:
+Apparel & Accessories > Shoes > Athletic Shoes
+
+Confidence:
+0.91
+
+Alternative Suggestions:
+1. Shoes > Running Shoes
+2. Shoes > Outdoor Shoes
+3. Shoes > Casual Shoes
+
+Review Status:
+AI Approved / Pending Review
+
+
+
+
+# ✨ Features
+
+# 📥 Product Catalogue Import
+
+* Import products from Excel/CSV files
+* Handles large catalogues
+* Validates product rows before processing
+* Gracefully handles missing or incomplete data
+
+# 🧠 AI-Assisted Classification
+
+Uses a lightweight and explainable NLP pipeline:
+
+text
+Product Title
+      +
+Description
+      +
+Available Attributes
+      ↓
+Text Preprocessing
+      ↓
+TF-IDF Vectorization
+      ↓
+Cosine Similarity
+      ↓
+Shopify Taxonomy Matching
+
+
+No GPU or large training dataset is required.
+
+# 📊 Confidence Scoring
+
+Each classification produces a numerical confidence score.
+
+Example:
+
+text
+Category: Athletic Shoes
+Confidence: 0.91
+
+
+Low-confidence classifications can automatically be sent for human review.
+
+# 🔀 Alternative Suggestions
+
+When the prediction is uncertain, the system provides the top alternative categories.
+
+text
+Prediction
+───────────
+1. Athletic Shoes     0.91
+2. Running Shoes      0.84
+3. Outdoor Shoes      0.78
+
+
+This helps reviewers make corrections quickly.
+
+# 🏷️ Attribute Detection
+
+Automatically extracts useful product attributes such as:
+
+* Color
+* Material
+* Assembly Required
+* Product Type
+* Other supported attributes
+
+# 🖼️ Image Validation
+
+Product image URLs are checked automatically to identify:
+
+* Missing image URLs
+* Invalid URLs
+* Broken/unreachable images
+* Failed image requests
+
+Image validation can be executed independently from classification.
+
+# 👥 Role-Based Access
+
+The application separates responsibilities between:
+
+Admin
+
+* Import catalogues
+* Start classification jobs
+* Monitor processing
+* Manage products
+* View classification results
+
+Reviewer
+
+* View uncertain classifications
+* Review AI predictions
+* Approve classifications
+* Manually correct categories
+
+# ⚡ Asynchronous Processing
+
+Large classification jobs run in the background using:
+
+text
+Django
+   │
+   ├── Creates Classification Job
+   │
+   ▼
+Celery
+   │
+   ▼
+Redis
+   │
+   ▼
+Celery Worker
+   │
+   ▼
+Classification Engine
+   │
+   ▼
+MariaDB
+
+
+The user does not have to keep the browser request open while thousands of products are being processed.
+
+# 🔁 Resumable Classification
+
+Classification is designed to continue from unprocessed records.
+
+If a worker stops during a large batch:
+
+text
+10,000 products
+      ↓
+Processed: 6,500
+      ↓
+Worker interrupted
+      ↓
+Restart worker
+      ↓
+Continue remaining products
+
+
+Previously processed products are not unnecessarily reprocessed.
+
+# 🔌 REST API
+
+Django REST Framework provides API endpoints for:
+
+* Listing classifications
+* Viewing individual results
+* Approving classifications
+* Updating classification data
+* Pagination
+
+# 🛡️ Fault-Tolerant Processing
+
+Individual bad records should not terminate the entire batch.
+
+The pipeline handles cases such as:
+
+* Missing product descriptions
+* Empty fields
+* Invalid rows
+* Broken image URLs
+* Unexpected input values
+
+
+
+# 🏗️ System Architecture
+
+text
+                    ┌─────────────────────────┐
+                    │     Web Browser          │
+                    │ HTML / CSS / Bootstrap   │
+                    │ JavaScript                │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                    ┌─────────────────────────┐
+                    │        Django            │
+                    │ Views / Authentication    │
+                    └───────┬─────────┬───────┘
+                            │         │
+                ┌───────────┘         └────────────┐
+                ▼                                  ▼
+      ┌───────────────────┐              ┌──────────────────┐
+      │ Classification    │              │ Django REST      │
+      │ Engine            │              │ Framework API    │
+      │ TF-IDF / sklearn  │              └────────┬─────────┘
+      └─────────┬─────────┘                       │
+                │                                 │
+                ▼                                 ▼
+      ┌───────────────────┐              ┌──────────────────┐
+      │     MariaDB       │◄─────────────│ API Clients      │
+      │ Products           │              └──────────────────┘
+      │ Categories         │
+      │ Results            │
+      │ Attributes         │
+      └─────────▲─────────┘
+                │
+                │
+      ┌─────────┴─────────┐
+      │   Celery Worker   │
+      └─────────▲─────────┘
+                │
+                ▼
+      ┌───────────────────┐
+      │       Redis       │
+      │   Message Broker  │
+      └───────────────────┘
+                ▲
+                │
+      ┌───────────────────┐
+      │      Docker       │
+      │   Redis Container │
+      └───────────────────┘
+
+
+
+
+# 🧠 Classification Pipeline
+
+The classification process follows these steps:
+
+text
+1. Import Product Catalogue
+             ↓
+2. Validate Product Data
+             ↓
+3. Combine Relevant Text Fields
+             ↓
+4. Preprocess Text
+             ↓
+5. Generate TF-IDF Vectors
+             ↓
+6. Compare Against Taxonomy
+             ↓
+7. Calculate Similarity Scores
+             ↓
+8. Select Best Category
+             ↓
+9. Generate Alternative Categories
+             ↓
+10. Extract Product Attributes
+             ↓
+11. Validate Product Images
+             ↓
+12. Save Classification Result
+             ↓
+13. Flag Low-Confidence Results
+             ↓
+14. Human Review & Approval
+
+
+
+
+# 📊 Classification Result
+
+A typical classification result contains:
+
+| Field              | Description                     |
+|  | - |
+| Product            | Original product                |
+| Predicted Category | Selected taxonomy category      |
+| Confidence         | Classification confidence score |
+| Alternatives       | Other suitable categories       |
+| Attributes         | Extracted product attributes    |
+| Image Status       | Image URL validation result     |
+| Review Status      | Pending / Approved / Corrected  |
+| Reviewer           | User who reviewed the result    |
+
+
+
+# 🧰 Technology Stack
+
+| Layer                   | Technology                       |
+| -- | -- |
+| Programming Language    | Python 3.10                      |
+| Web Framework           | Django 5.2.17                    |
+| REST API                | Django REST Framework            |
+| Database                | MariaDB                          |
+| Background Processing   | Celery 5.6.3                     |
+| Message Broker          | Redis 8.1.0                      |
+| Machine Learning / NLP  | Scikit-learn 1.7.2               |
+| Text Matching           | TF-IDF + Cosine Similarity       |
+| Excel Processing        | OpenPyXL 3.1.5                   |
+| HTTP / Image Validation | Requests                         |
+| Frontend                | HTML, CSS, Bootstrap, JavaScript |
+| Containerization        | Docker                           |
+| API Testing             | Postman                          |
+
+
+
+# 📂 Project Structure
+
+text
+shopify-product-taxonomy-classifier/
+│
+├── manage.py
+│
+├── shop_prj/
+│   ├── settings.py
+│   ├── urls.py
+│   └── celery.py
+│
+├── shop_app/
+│   ├── models.py
+│   ├── views.py
+│   ├── serializers.py
+│   ├── tasks.py
+│   ├── admin.py
+│   │
+│   └── management/
+│       └── commands/
+│           ├── import_products.py
+│           ├── seed_categories.py
+│           ├── classify_products.py
+│           ├── detect_attributes.py
+│           └── validate_images.py
+│
+├── templates/
+│   ├── admin/
+│   │   ├── dashboard.html
+│   │   └── review.html
+│   │
+│   └── reviewer/
+│       ├── dashboard.html
+│       └── review.html
+│
+├── static/
+│   ├── css/
+│   ├── js/
+│   └── images/
+│
+└── README.md
+
+
+
+
+# ⚙️ Installation & Setup
+
+ 1. Clone the Repository
+
+bash
+git clone https://github.com/JissmonJoshy/Django-Celery-Redis-Projects.git
+
+cd Django-Celery-Redis-Projects/shopify-product-taxonomy-classifier
+
+
+ 2. Create a Virtual Environment
+
+# Windows
+
+bash
+python -m venv venv
+venv\Scripts\activate
+
+
+# macOS / Linux
+
+bash
+python3 -m venv venv
+source venv/bin/activate
+
+
+ 3. Install Dependencies
+
+bash
+pip install django djangorestframework mysqlclient openpyxl scikit-learn celery redis requests
+
+
+Alternatively, if a `requirements.txt` file is included:
+
+bash
+pip install -r requirements.txt
+
+
+ 4. Create MariaDB Database
+
+sql
+CREATE DATABASE shopify_classifier
+CHARACTER SET utf8mb4;
+
+
+Configure the database credentials in:
+
+text
+shop_prj/settings.py
+
+
+ 5. Configure Environment Variables
+
+# Windows
+
+cmd
+set EMAIL_HOST_USER=your_email@gmail.com
+set EMAIL_HOST_PASSWORD=your_app_password
+
+
+For production deployments, use a `.env` file or secure environment-variable management instead of committing credentials to Git.
+
+ 6. Start Redis
+
+Redis can be started using Docker:
+
+bash
+docker run -d --name redis -p 6379:6379 redis
+
+
+Verify the container:
+
+bash
+docker ps
+
+
+ 7. Apply Database Migrations
+
+bash
+python manage.py migrate
+
+
+Create an administrator:
+
+bash
+python manage.py createsuperuser
+
+
+ 8. Load Shopify Taxonomy Categories
+
+bash
+python manage.py seed_categories
+
+
+ 9. Start Django
+
+bash
+python manage.py runserver
+
+
+ 10. Start Celery Worker
+
+Open another terminal and activate the virtual environment:
+
+bash
+celery -A shop_prj worker --loglevel=info --pool=solo
+
+
+The application and Celery worker should now be running together.
+
+
+
+# 🚀 Usage
+
+ Web Application
+
+| Feature            | URL                    |
+|  | - |
+| Login              | `/login/`              |
+| Admin Dashboard    | `/admin_dashboard/`    |
+| Reviewer Dashboard | `/reviewer_dashboard/` |
+| Import Products    | `/import-products/`    |
+| Product Results    | `/products/`           |
+| Product Review     | `/products/<id>/`      |
+| Run Classification | `/run-classification/` |
+
+ REST API
+
+| Method  | Endpoint                             | Purpose                |
+| - |  | - |
+| `GET`   | `/api/classifications/`              | List classifications   |
+| `GET`   | `/api/classifications/<id>/`         | View classification    |
+| `POST`  | `/api/classifications/<id>/approve/` | Approve classification |
+| `PATCH` | `/api/classifications/<id>/`         | Update classification  |
+
+
+
+# 🖥️ Management Commands
+
+Import products:
+
+bash
+python manage.py import_products
+
+
+Load taxonomy:
+
+bash
+python manage.py seed_categories
+
+
+Run synchronous classification:
+
+bash
+python manage.py classify_products
+
+
+Detect attributes:
+
+bash
+python manage.py detect_attributes
+
+
+Validate product images:
+
+bash
+python manage.py validate_images
+
+
+
+
+# 🔐 User Roles
+
+ Admin
+
+The administrator manages the overall classification pipeline.
+
+text
+Admin
+ │
+ ├── Import Products
+ ├── Seed Taxonomy
+ ├── Start Classification
+ ├── Monitor Results
+ └── Manage System Data
+
+
+ Reviewer
+
+Reviewers handle uncertain AI predictions.
+
+text
+Reviewer
+ │
+ ├── View Pending Reviews
+ ├── Inspect Product
+ ├── Compare Suggested Categories
+ ├── Approve Prediction
+ └── Correct Category
+
+
+This separation helps keep automated processing and human verification as distinct stages.
+
+
+
+# 🔄 Human-in-the-Loop Workflow
+
+The system does not treat every AI prediction as final.
+
+text
+             AI Classification
+                    │
+                    ▼
+             Confidence Score
+                    │
+          ┌─────────┴─────────┐
+          │                   │
+       High                 Low
+     Confidence          Confidence
+          │                   │
+          ▼                   ▼
+      Accepted          Manual Review
+                              │
+                    ┌─────────┴─────────┐
+                    │                   │
+                 Approve             Correct
+                    │                   │
+                    └─────────┬─────────┘
+                              ▼
+                      Final Classification
+
+
+This allows automation to handle straightforward products while uncertain cases can be reviewed by a human.
+
+
+
+# 🧩 Key Design Decisions
+
+# Why TF-IDF?
+
+TF-IDF was selected as a lightweight and explainable baseline for text classification.
+
+Advantages include:
+
+* No GPU requirement
+* Fast inference
+* Simple implementation
+* Easy debugging
+* Interpretable similarity-based matching
+* Suitable for an initial taxonomy classification pipeline
+
+# Why Celery + Redis?
+
+Synchronous processing becomes problematic when processing thousands of products.
+
+Instead:
+
+text
+Web Request
+     ↓
+Create Background Task
+     ↓
+Redis
+     ↓
+Celery Worker
+     ↓
+Process Products
+     ↓
+Update Database
+
+
+The Django application remains available while the classification job runs independently.
+
+# Why MariaDB?
+
+MariaDB provides persistent relational storage for:
+
+* Products
+* Taxonomy categories
+* Classification results
+* Attributes
+* Review information
+* Processing status
+
+# Why Human Review?
+
+Automated classification can produce uncertain results, especially when product information is incomplete or categories are closely related.
+
+The review workflow provides a controlled way to verify and correct those predictions.
+
+
+
+# 🛡️ Fault-Tolerance Strategy
+
+The processing pipeline is designed so that one problematic product does not stop the entire batch.
+
+Example:
+
+text
+Product 001 → ✅ Classified
+Product 002 → ✅ Classified
+Product 003 → ⚠️ Missing description
+Product 004 → ✅ Classified
+Product 005 → ⚠️ Broken image
+Product 006 → ✅ Classified
+
+
+Instead of terminating the entire job, problematic records can be logged and marked for further processing.
+
+
+
+# 📈 Scalability
+
+The architecture is designed with large catalogues in mind.
+
+For example:
+
+text
+10,000+ Products
+       │
+       ▼
+Database
+       │
+       ▼
+Celery Queue
+       │
+ ┌─────┼─────┐
+ ▼     ▼     ▼
+Worker Worker Worker
+  │     │     │
+  └─────┼─────┘
+        ▼
+     MariaDB
+
+
+Additional Celery workers can be introduced when processing requirements increase.
+
+
+
+# 🧪 Testing & API Development
+
+The REST API can be tested using Postman.
+
+Example workflow:
+
+text
+POST /api/classifications/
+        ↓
+Create / Process Data
+        ↓
+GET /api/classifications/
+        ↓
+View Results
+        ↓
+POST /api/classifications/1/approve/
+        ↓
+Approve Classification
+
+
+
+# 🔮 Future Improvements
+
+The current system provides the core classification and review workflow. Planned improvements include:
+
+* ⏰ Celery Beat scheduled classification
+* 🔁 Automatic task retries
+* 📊 Flower-based Celery monitoring
+* 📈 Processing statistics dashboard
+* 🔐 Token/JWT-based API authentication
+* 🧠 More advanced NLP/embedding-based classification
+* 📝 Improved audit logging
+* 📦 Dockerized Django + Celery + Redis + MariaDB stack
+* ☁️ Cloud deployment
+* 📊 Classification accuracy evaluation dashboard
+* 🔍 Advanced product search and filtering
+* 📁 Support for additional catalogue formats
+
+
+
+# 📌 Project Status
+
+| Component                    | Status     |
+| - | - |
+| Product Catalogue Import     | ✅ Complete |
+| Shopify Taxonomy Integration | ✅ Complete |
+| TF-IDF Classification        | ✅ Complete |
+| Confidence Scoring           | ✅ Complete |
+| Alternative Suggestions      | ✅ Complete |
+| Attribute Detection          | ✅ Complete |
+| Image Validation             | ✅ Complete |
+| Admin Dashboard              | ✅ Complete |
+| Reviewer Workflow            | ✅ Complete |
+| REST API                     | ✅ Complete |
+| MariaDB Integration          | ✅ Complete |
+| Celery Background Processing | ✅ Complete |
+| Redis Integration            | ✅ Complete |
+| Resumable Processing         | ✅ Complete |
+| Celery Beat                  | 🔜 Planned |
+| Automatic Retries            | 🔜 Planned |
+| Flower Monitoring            | 🔜 Planned |
+
+
+
+# 💡 What This Project Demonstrates
+
+This project combines several backend and software-engineering concepts into one practical application:
+
+* Python backend development
+* Django architecture
+* Django REST Framework
+* Relational database design
+* NLP-based text classification
+* Scikit-learn
+* Background task processing
+* Celery
+* Redis
+* Docker
+* Excel/CSV data processing
+* Image URL validation
+* Authentication and role-based access
+* Human-in-the-loop workflows
+* REST API development
+* Batch processing
+* Fault-tolerant application design
+* Resumable processing
+
+
+
+# 👨‍💻 Author
+
+Jiss Mon Joshy
+
+Python / Django Developer
+
+* GitHub: [JissmonJoshy](https://github.com/JissmonJoshy)
+* LinkedIn: [Jiss Mon Joshy](https://www.linkedin.com/in/jiss-mon-joshy-b6b527209/)
+
+
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+
+Built with 🧠 + ☕ using Python, Django, Celery, Redis, and MariaDB.
